@@ -24,7 +24,7 @@ import {
     Hi,
     MyGuild,
     SquadronCategories,
-    ChooseSquadron
+    ChooseSquadron, ModRoles
 } from './commands';
 import { HouseKeeping } from './houseKeeping';
 import { HelpSchema } from '../../interfaces/typings';
@@ -116,6 +116,7 @@ export class DiscordClient {
     private initiateCommands(): void {
         let myGuild = new MyGuild();
         let adminRoles = new AdminRoles();
+        let modRoles = new ModRoles();
         let forbiddenRoles = new ForbiddenRoles();
         let squadronCategories = new SquadronCategories();
         let chooseSquadron = new ChooseSquadron();
@@ -127,6 +128,8 @@ export class DiscordClient {
         this.commandsMap.set("mgd", myGuild);
         this.commandsMap.set("adminroles", adminRoles);
         this.commandsMap.set("arl", adminRoles);
+        this.commandsMap.set("modroles", modRoles);
+        this.commandsMap.set("mrl", modRoles);
         this.commandsMap.set("forbiddenroles", forbiddenRoles);
         this.commandsMap.set("frl", forbiddenRoles);
         this.commandsMap.set("squadcategories", squadronCategories);

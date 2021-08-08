@@ -20,6 +20,7 @@ import App from '../../server';
 export class Access {
     public static readonly ALL: string = "all";
     public static readonly ADMIN: string = "admin";
+    public static readonly MOD: string = "mod";
     public static readonly FORBIDDEN: string = "forbidden";
 
     public static async has(author: User, guild: Guild, perms: string[], allowAdmin = false): Promise<boolean> {
@@ -42,6 +43,15 @@ export class Access {
                         case "admin": {
                             let adminRoles = guild.admin_roles_id;
                             adminRoles.forEach((role, index) => {
+                                if (roles.cache.has(role)) {
+                                    bool = true;
+                                }
+                            });
+                        }
+                            break;
+                        case "mod": {
+                            let modRoles = guild.mod_roles_id;
+                            modRoles.forEach((role, index) => {
                                 if (roles.cache.has(role)) {
                                     bool = true;
                                 }

@@ -60,7 +60,7 @@ export class ChooseSquadron implements Command {
 
     async get(message: Message, argsArray: string[]) {
         try {
-            await Access.has(message.author, message.guild, [Access.ADMIN, Access.FORBIDDEN]);
+            await Access.has(message.author, message.guild, [Access.ADMIN, Access.MOD, Access.FORBIDDEN]);
             if (argsArray.length === 3) {
                 let guildId = message.guild.id;
                 let numberToSelect = +argsArray[1];

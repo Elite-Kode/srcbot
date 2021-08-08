@@ -22,6 +22,7 @@ export let guildSchema: Schema = new Schema({
         unique: true
     },
     admin_roles_id: [String],
+    mod_roles_id: [String],
     forbidden_roles_id: [String],
     squadron_channel_category_id: [String],
     created_at: {
