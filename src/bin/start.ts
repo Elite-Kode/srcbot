@@ -21,7 +21,7 @@ import App from '../server';
 
 debug('ts-express:server');
 
-const port = normalizePort(process.env.PORT || 3002);
+const port = normalizePort(process.env.PORT || 3001);
 App.express.set('port', port);
 
 const server = http.createServer(App.express);
