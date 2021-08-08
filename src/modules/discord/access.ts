@@ -20,7 +20,6 @@ import App from '../../server';
 export class Access {
     public static readonly ALL: string = "all";
     public static readonly ADMIN: string = "admin";
-    public static readonly BGS: string = "bgs";
     public static readonly FORBIDDEN: string = "forbidden";
 
     public static async has(author: User, guild: Guild, perms: string[], allowAdmin = false): Promise<boolean> {

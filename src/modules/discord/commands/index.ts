@@ -19,3 +19,5 @@ export * from './help';
 export * from './myGuild';
 export * from './adminRoles';
 export * from './forbiddenRoles';
+export * from './squadronCategories';
+export * from './chooseSquadron';

@@ -22,7 +22,9 @@ import {
     ForbiddenRoles,
     Help,
     Hi,
-    MyGuild
+    MyGuild,
+    SquadronCategories,
+    ChooseSquadron
 } from './commands';
 import { HouseKeeping } from './houseKeeping';
 import { HelpSchema } from '../../interfaces/typings';
@@ -115,6 +117,9 @@ export class DiscordClient {
         let myGuild = new MyGuild();
         let adminRoles = new AdminRoles();
         let forbiddenRoles = new ForbiddenRoles();
+        let squadronCategories = new SquadronCategories();
+        let chooseSquadron = new ChooseSquadron();
+        let chooseSquadronDm = new ChooseSquadron(true);
 
         this.commandsMap.set("hi", new Hi());
         this.commandsMap.set("help", new Help());
@@ -124,6 +129,12 @@ export class DiscordClient {
         this.commandsMap.set("arl", adminRoles);
         this.commandsMap.set("forbiddenroles", forbiddenRoles);
         this.commandsMap.set("frl", forbiddenRoles);
+        this.commandsMap.set("squadcategories", squadronCategories);
+        this.commandsMap.set("sqc", squadronCategories);
+        this.commandsMap.set("choosesquad", chooseSquadron);
+        this.commandsMap.set("choosesquaddm", chooseSquadronDm);
+        this.commandsMap.set("chsq", chooseSquadron);
+        this.commandsMap.set("chsqdm", chooseSquadronDm);
     }
 
     createHelp(): void {
