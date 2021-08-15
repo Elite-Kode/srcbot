@@ -21,4 +21,4 @@ export * from './adminRoles';
 export * from './modRoles';
 export * from './forbiddenRoles';
 export * from './squadronCategories';
-export * from './chooseSquadron';
+export * from './squadronChannels';
