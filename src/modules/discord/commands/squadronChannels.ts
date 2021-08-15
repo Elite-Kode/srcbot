@@ -94,120 +94,120 @@ export class SquadronChannels implements Command {
         }
     }
 
-    async create(message: Message, argsArray: string[]) {
-        try {
-            await Access.has(message.author, message.guild, [Access.ADMIN, Access.MOD, Access.FORBIDDEN]);
-            if (argsArray.length === 3) {
-                let guildId = message.guild.id;
-                let platforms = argsArray[0].match(/.{1,2}/g);
-                let category = argsArray[1];
-                let name = argsArray[2];
-                try {
-                    let guild = await this.db.model.guild.findOne({guild_id: guildId});
-                    if (guild) {
-                        if (guild.squadron_platforms && guild.squadron_platforms.length !== 0) {
-                            if (guild.squadron_channel_category_id && guild.squadron_channel_category_id.length !== 0) {
-                                if (platforms.every(platform => guild.squadron_platforms.includes(platform)) && guild.squadron_channel_category_id.indexOf(category) !== -1) {
-
-                                    let channelName = `${name}-${platforms.sort().join()}`;
-                                    message.guild.channels.create(channelName)
-                                    let embed = new MessageEmbed();
-                                    embed.setTitle("Admin Roles");
-                                    embed.setColor([255, 0, 255]);
-                                    let idList = "";
-                                    guild.admin_roles_id.forEach(id => {
-                                        if (message.guild.roles.cache.has(id)) {
-                                            idList += `${id} - @${message.guild.roles.cache.get(id).name}\n`;
-                                        } else {
-                                            idList += `${id} - Does not exist in Discord. Please delete this from SRCBot`;
-                                        }
-                                    });
-                                    embed.addField("Ids and Names", idList);
-                                    embed.setTimestamp(new Date());
-                                    try {
-                                        message.channel.send(embed);
-                                    } catch (err) {
-                                        App.bugsnagClient.call(err, {
-                                            metaData: {
-                                                guild: guild._id
-                                            }
-                                        });
-                                    }
-                                } else if (!platforms.every(platform => guild.squadron_platforms.includes(platform))) {
-                                    try {
-                                        await message.channel.send(Responses.getResponse(Responses.FAIL));
-                                        message.channel.send("Platform doesn't exist. Please contact a moderator for help.");
-                                    } catch (err) {
-                                        App.bugsnagClient.call(err, {
-                                            metaData: {
-                                                guild: guild._id
-                                            }
-                                        });
-                                    }
-                                } else {
-                                    try {
-                                        await message.channel.send(Responses.getResponse(Responses.FAIL));
-                                        message.channel.send("Category doesn't exist. Please contact a moderator for help.");
-                                    } catch (err) {
-                                        App.bugsnagClient.call(err, {
-                                            metaData: {
-                                                guild: guild._id
-                                            }
-                                        });
-                                    }
-                                }
-                            } else {
-                                try {
-                                    await message.channel.send(Responses.getResponse(Responses.FAIL));
-                                    message.channel.send("You don't have any squadron channel category ids set up");
-                                } catch (err) {
-                                    App.bugsnagClient.call(err, {
-                                        metaData: {
-                                            guild: guild._id
-                                        }
-                                    });
-                                }
-                            }
-                        } else {
-                            try {
-                                await message.channel.send(Responses.getResponse(Responses.FAIL));
-                                message.channel.send("You don't have any squadron platforms set up");
-                            } catch (err) {
-                                App.bugsnagClient.call(err, {
-                                    metaData: {
-                                        guild: guild._id
-                                    }
-                                });
-                            }
-                        }
-                    } else {
-                        try {
-                            await message.channel.send(Responses.getResponse(Responses.FAIL));
-                            message.channel.send(Responses.getResponse(Responses.GUILDNOTSETUP));
-                        } catch (err) {
-                            App.bugsnagClient.call(err, {
-                                metaData: {
-                                    guild: guild._id
-                                }
-                            });
-                        }
-                    }
-                    message.channel.send(platforms.join());
-                    message.channel.send(category);
-                    message.channel.send(name);
-                } catch (err) {
-                    message.channel.send(Responses.getResponse(Responses.FAIL));
-                    App.bugsnagClient.call(err);
-                }
-            } else if (argsArray.length > 3) {
-                message.channel.send(Responses.getResponse(Responses.TOOMANYPARAMS));
-            } else {
-                message.channel.send(Responses.getResponse(Responses.NOPARAMS));
-            }
-        } catch (err) {
-            message.channel.send(Responses.getResponse(Responses.INSUFFICIENTPERMS));
-        }
-    }
+    // async create(message: Message, argsArray: string[]) {
+    //     try {
+    //         await Access.has(message.author, message.guild, [Access.ADMIN, Access.MOD, Access.FORBIDDEN]);
+    //         if (argsArray.length === 3) {
+    //             let guildId = message.guild.id;
+    //             let platforms = argsArray[0].match(/.{1,2}/g);
+    //             let category = argsArray[1];
+    //             let name = argsArray[2];
+    //             try {
+    //                 let guild = await this.db.model.guild.findOne({guild_id: guildId});
+    //                 if (guild) {
+    //                     if (guild.squadron_platforms && guild.squadron_platforms.length !== 0) {
+    //                         if (guild.squadron_channel_category_id && guild.squadron_channel_category_id.length !== 0) {
+    //                             if (platforms.every(platform => guild.squadron_platforms.includes(platform)) && guild.squadron_channel_category_id.indexOf(category) !== -1) {
+    //
+    //                                 let channelName = `${name}-${platforms.sort().join()}`;
+    //                                 message.guild.channels.create(channelName)
+    //                                 let embed = new MessageEmbed();
+    //                                 embed.setTitle("Admin Roles");
+    //                                 embed.setColor([255, 0, 255]);
+    //                                 let idList = "";
+    //                                 guild.admin_roles_id.forEach(id => {
+    //                                     if (message.guild.roles.cache.has(id)) {
+    //                                         idList += `${id} - @${message.guild.roles.cache.get(id).name}\n`;
+    //                                     } else {
+    //                                         idList += `${id} - Does not exist in Discord. Please delete this from SRCBot`;
+    //                                     }
+    //                                 });
+    //                                 embed.addField("Ids and Names", idList);
+    //                                 embed.setTimestamp(new Date());
+    //                                 try {
+    //                                     message.channel.send(embed);
+    //                                 } catch (err) {
+    //                                     App.bugsnagClient.call(err, {
+    //                                         metaData: {
+    //                                             guild: guild._id
+    //                                         }
+    //                                     });
+    //                                 }
+    //                             } else if (!platforms.every(platform => guild.squadron_platforms.includes(platform))) {
+    //                                 try {
+    //                                     await message.channel.send(Responses.getResponse(Responses.FAIL));
+    //                                     message.channel.send("Platform doesn't exist. Please contact a moderator for help.");
+    //                                 } catch (err) {
+    //                                     App.bugsnagClient.call(err, {
+    //                                         metaData: {
+    //                                             guild: guild._id
+    //                                         }
+    //                                     });
+    //                                 }
+    //                             } else {
+    //                                 try {
+    //                                     await message.channel.send(Responses.getResponse(Responses.FAIL));
+    //                                     message.channel.send("Category doesn't exist. Please contact a moderator for help.");
+    //                                 } catch (err) {
+    //                                     App.bugsnagClient.call(err, {
+    //                                         metaData: {
+    //                                             guild: guild._id
+    //                                         }
+    //                                     });
+    //                                 }
+    //                             }
+    //                         } else {
+    //                             try {
+    //                                 await message.channel.send(Responses.getResponse(Responses.FAIL));
+    //                                 message.channel.send("You don't have any squadron channel category ids set up");
+    //                             } catch (err) {
+    //                                 App.bugsnagClient.call(err, {
+    //                                     metaData: {
+    //                                         guild: guild._id
+    //                                     }
+    //                                 });
+    //                             }
+    //                         }
+    //                     } else {
+    //                         try {
+    //                             await message.channel.send(Responses.getResponse(Responses.FAIL));
+    //                             message.channel.send("You don't have any squadron platforms set up");
+    //                         } catch (err) {
+    //                             App.bugsnagClient.call(err, {
+    //                                 metaData: {
+    //                                     guild: guild._id
+    //                                 }
+    //                             });
+    //                         }
+    //                     }
+    //                 } else {
+    //                     try {
+    //                         await message.channel.send(Responses.getResponse(Responses.FAIL));
+    //                         message.channel.send(Responses.getResponse(Responses.GUILDNOTSETUP));
+    //                     } catch (err) {
+    //                         App.bugsnagClient.call(err, {
+    //                             metaData: {
+    //                                 guild: guild._id
+    //                             }
+    //                         });
+    //                     }
+    //                 }
+    //                 message.channel.send(platforms.join());
+    //                 message.channel.send(category);
+    //                 message.channel.send(name);
+    //             } catch (err) {
+    //                 message.channel.send(Responses.getResponse(Responses.FAIL));
+    //                 App.bugsnagClient.call(err);
+    //             }
+    //         } else if (argsArray.length > 3) {
+    //             message.channel.send(Responses.getResponse(Responses.TOOMANYPARAMS));
+    //         } else {
+    //             message.channel.send(Responses.getResponse(Responses.NOPARAMS));
+    //         }
+    //     } catch (err) {
+    //         message.channel.send(Responses.getResponse(Responses.INSUFFICIENTPERMS));
+    //     }
+    // }
 
     async sort(message: Message, argsArray: string[]) {
         try {
