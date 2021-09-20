@@ -20,6 +20,7 @@ export interface IGuild {
     mod_roles_id: string[],
     forbidden_roles_id: string[],
     squadron_channel_category_id: string[],
+    squadron_platforms: string[],
     created_at: Date,
     updated_at: Date
 }

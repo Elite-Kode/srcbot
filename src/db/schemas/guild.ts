@@ -25,6 +25,7 @@ export let guildSchema: Schema = new Schema({
     mod_roles_id: [String],
     forbidden_roles_id: [String],
     squadron_channel_category_id: [String],
+    squadron_platforms: [String],
     created_at: {
         type: Date,
         default: Date.now

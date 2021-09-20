@@ -38,7 +38,7 @@ export class SquadronChannels implements Command {
         try {
             if (argsArray.length > 0) {
                 let command = argsArray[0].toLowerCase();
-                command = this.checkAndMapAlias(command);
+                command = SquadronChannels.checkAndMapAlias(command);
                 if (this[command]) {
                     this[command](message, argsArray);
                 } else {
@@ -52,7 +52,7 @@ export class SquadronChannels implements Command {
         }
     }
 
-    checkAndMapAlias(command: string) {
+    private static checkAndMapAlias(command: string) {
         switch (command) {
             case 'rnd':
                 return 'random';
@@ -94,120 +94,99 @@ export class SquadronChannels implements Command {
         }
     }
 
-    // async create(message: Message, argsArray: string[]) {
-    //     try {
-    //         await Access.has(message.author, message.guild, [Access.ADMIN, Access.MOD, Access.FORBIDDEN]);
-    //         if (argsArray.length === 3) {
-    //             let guildId = message.guild.id;
-    //             let platforms = argsArray[0].match(/.{1,2}/g);
-    //             let category = argsArray[1];
-    //             let name = argsArray[2];
-    //             try {
-    //                 let guild = await this.db.model.guild.findOne({guild_id: guildId});
-    //                 if (guild) {
-    //                     if (guild.squadron_platforms && guild.squadron_platforms.length !== 0) {
-    //                         if (guild.squadron_channel_category_id && guild.squadron_channel_category_id.length !== 0) {
-    //                             if (platforms.every(platform => guild.squadron_platforms.includes(platform)) && guild.squadron_channel_category_id.indexOf(category) !== -1) {
-    //
-    //                                 let channelName = `${name}-${platforms.sort().join()}`;
-    //                                 message.guild.channels.create(channelName)
-    //                                 let embed = new MessageEmbed();
-    //                                 embed.setTitle("Admin Roles");
-    //                                 embed.setColor([255, 0, 255]);
-    //                                 let idList = "";
-    //                                 guild.admin_roles_id.forEach(id => {
-    //                                     if (message.guild.roles.cache.has(id)) {
-    //                                         idList += `${id} - @${message.guild.roles.cache.get(id).name}\n`;
-    //                                     } else {
-    //                                         idList += `${id} - Does not exist in Discord. Please delete this from SRCBot`;
-    //                                     }
-    //                                 });
-    //                                 embed.addField("Ids and Names", idList);
-    //                                 embed.setTimestamp(new Date());
-    //                                 try {
-    //                                     message.channel.send(embed);
-    //                                 } catch (err) {
-    //                                     App.bugsnagClient.call(err, {
-    //                                         metaData: {
-    //                                             guild: guild._id
-    //                                         }
-    //                                     });
-    //                                 }
-    //                             } else if (!platforms.every(platform => guild.squadron_platforms.includes(platform))) {
-    //                                 try {
-    //                                     await message.channel.send(Responses.getResponse(Responses.FAIL));
-    //                                     message.channel.send("Platform doesn't exist. Please contact a moderator for help.");
-    //                                 } catch (err) {
-    //                                     App.bugsnagClient.call(err, {
-    //                                         metaData: {
-    //                                             guild: guild._id
-    //                                         }
-    //                                     });
-    //                                 }
-    //                             } else {
-    //                                 try {
-    //                                     await message.channel.send(Responses.getResponse(Responses.FAIL));
-    //                                     message.channel.send("Category doesn't exist. Please contact a moderator for help.");
-    //                                 } catch (err) {
-    //                                     App.bugsnagClient.call(err, {
-    //                                         metaData: {
-    //                                             guild: guild._id
-    //                                         }
-    //                                     });
-    //                                 }
-    //                             }
-    //                         } else {
-    //                             try {
-    //                                 await message.channel.send(Responses.getResponse(Responses.FAIL));
-    //                                 message.channel.send("You don't have any squadron channel category ids set up");
-    //                             } catch (err) {
-    //                                 App.bugsnagClient.call(err, {
-    //                                     metaData: {
-    //                                         guild: guild._id
-    //                                     }
-    //                                 });
-    //                             }
-    //                         }
-    //                     } else {
-    //                         try {
-    //                             await message.channel.send(Responses.getResponse(Responses.FAIL));
-    //                             message.channel.send("You don't have any squadron platforms set up");
-    //                         } catch (err) {
-    //                             App.bugsnagClient.call(err, {
-    //                                 metaData: {
-    //                                     guild: guild._id
-    //                                 }
-    //                             });
-    //                         }
-    //                     }
-    //                 } else {
-    //                     try {
-    //                         await message.channel.send(Responses.getResponse(Responses.FAIL));
-    //                         message.channel.send(Responses.getResponse(Responses.GUILDNOTSETUP));
-    //                     } catch (err) {
-    //                         App.bugsnagClient.call(err, {
-    //                             metaData: {
-    //                                 guild: guild._id
-    //                             }
-    //                         });
-    //                     }
-    //                 }
-    //                 message.channel.send(platforms.join());
-    //                 message.channel.send(category);
-    //                 message.channel.send(name);
-    //             } catch (err) {
-    //                 message.channel.send(Responses.getResponse(Responses.FAIL));
-    //                 App.bugsnagClient.call(err);
-    //             }
-    //         } else if (argsArray.length > 3) {
-    //             message.channel.send(Responses.getResponse(Responses.TOOMANYPARAMS));
-    //         } else {
-    //             message.channel.send(Responses.getResponse(Responses.NOPARAMS));
-    //         }
-    //     } catch (err) {
-    //         message.channel.send(Responses.getResponse(Responses.INSUFFICIENTPERMS));
-    //     }
-    // }
+    async create(message: Message, argsArray: string[]) {
+        try {
+            await Access.has(message.author, message.guild, [Access.ADMIN, Access.MOD, Access.FORBIDDEN]);
+            if (argsArray.length === 4) {
+                let guildId = message.guild.id;
+                let platforms = argsArray[1].match(/.{1,2}/g);
+                let categoryName = argsArray[2];
+                let name = argsArray[3];
+                try {
+                    let guild = await this.db.model.guild.findOne({guild_id: guildId});
+                    if (guild) {
+                        if (guild.squadron_platforms && guild.squadron_platforms.length !== 0) {
+                            if (guild.squadron_channel_category_id && guild.squadron_channel_category_id.length !== 0) {
+                                const categoryObject = this.getChannelCategoryFromName(message.channel as TextChannel, categoryName)
+                                if (platforms.every(platform => guild.squadron_platforms.includes(platform)) && categoryObject && guild.squadron_channel_category_id.findIndex(item => item === categoryObject.id) !== -1) {
+                                    let channelName = `${name}-${platforms.sort().join()}`;
+                                    await message.guild.channels.create(channelName, {
+                                        parent: categoryObject
+                                    })
+                                    await this.sortChannelCategory(message.guild.id, message.channel as TextChannel, categoryObject.id)
+                                    message.channel.send(Responses.getResponse(Responses.SUCCESS));
+                                } else if (!platforms.every(platform => guild.squadron_platforms.includes(platform))) {
+                                    try {
+                                        await message.channel.send(Responses.getResponse(Responses.FAIL));
+                                        message.channel.send("Platform doesn't exist. Please contact a moderator for help.");
+                                    } catch (err) {
+                                        App.bugsnagClient.call(err, {
+                                            metaData: {
+                                                guild: guild._id
+                                            }
+                                        });
+                                    }
+                                } else {
+                                    try {
+                                        await message.channel.send(Responses.getResponse(Responses.FAIL));
+                                        message.channel.send("Category doesn't exist. Please contact a moderator for help.");
+                                    } catch (err) {
+                                        App.bugsnagClient.call(err, {
+                                            metaData: {
+                                                guild: guild._id
+                                            }
+                                        });
+                                    }
+                                }
+                            } else {
+                                try {
+                                    await message.channel.send(Responses.getResponse(Responses.FAIL));
+                                    message.channel.send("You don't have any squadron channel category ids set up");
+                                } catch (err) {
+                                    App.bugsnagClient.call(err, {
+                                        metaData: {
+                                            guild: guild._id
+                                        }
+                                    });
+                                }
+                            }
+                        } else {
+                            try {
+                                await message.channel.send(Responses.getResponse(Responses.FAIL));
+                                message.channel.send("You don't have any squadron platforms set up");
+                            } catch (err) {
+                                App.bugsnagClient.call(err, {
+                                    metaData: {
+                                        guild: guild._id
+                                    }
+                                });
+                            }
+                        }
+                    } else {
+                        try {
+                            await message.channel.send(Responses.getResponse(Responses.FAIL));
+                            message.channel.send(Responses.getResponse(Responses.GUILDNOTSETUP));
+                        } catch (err) {
+                            App.bugsnagClient.call(err, {
+                                metaData: {
+                                    guild: guild._id
+                                }
+                            });
+                        }
+                    }
+                } catch (err) {
+                    message.channel.send(Responses.getResponse(Responses.FAIL));
+                    App.bugsnagClient.call(err);
+                }
+            } else if (argsArray.length > 3) {
+                message.channel.send(Responses.getResponse(Responses.TOOMANYPARAMS));
+            } else {
+                message.channel.send(Responses.getResponse(Responses.NOPARAMS));
+            }
+        } catch (err) {
+            message.channel.send(Responses.getResponse(Responses.INSUFFICIENTPERMS));
+        }
+    }
 
     async sort(message: Message, argsArray: string[]) {
         try {
@@ -217,12 +196,12 @@ export class SquadronChannels implements Command {
                 let categoryToSelect = argsArray[1];
                 try {
                     let flags = Permissions.FLAGS;
-                    if (message.guild.me.permissionsIn(message.channel).has([flags.EMBED_LINKS])) {
+                    if (message.guild.me.permissionsIn(message.channel).has([flags.MANAGE_CHANNELS])) {
                         await this.sortChannelCategory(guildId, message.channel as TextChannel, categoryToSelect);
                         message.channel.send(Responses.getResponse(Responses.SUCCESS));
                     } else {
                         try {
-                            message.channel.send(Responses.getResponse(Responses.EMBEDPERMISSION));
+                            message.channel.send(Responses.getResponse(Responses.CHANNELPERMISSIONS));
                         } catch (err) {
                             App.bugsnagClient.call(err);
                         }
@@ -241,7 +220,7 @@ export class SquadronChannels implements Command {
         }
     }
 
-    async sortChannelCategory(guildId: string, channel: TextChannel, categoryToSelect: string) {
+    private async sortChannelCategory(guildId: string, channel: TextChannel, categoryToSelect: string) {
         let guild = await this.db.model.guild.findOne({guild_id: guildId});
         if (guild) {
             let categories: CategoryChannel[] = []
@@ -254,9 +233,14 @@ export class SquadronChannels implements Command {
                 if (index >= 0) {
                     categories.push(channel.guild.channels.cache.get(categoryToSelect) as CategoryChannel)
                 } else {
-                    await channel.send(Responses.getResponse(Responses.FAIL));
-                    channel.send(Responses.getResponse(Responses.IDNOTFOUND));
-                    return
+                    const categoryToSelectObject = this.getChannelCategoryFromName(channel, categoryToSelect)
+                    if (categoryToSelectObject) {
+                        categories.push(categoryToSelectObject)
+                    } else {
+                        await channel.send(Responses.getResponse(Responses.FAIL));
+                        channel.send(Responses.getResponse(Responses.IDNOTFOUND));
+                        return
+                    }
                 }
             }
             if (categories.length === 0) {
@@ -287,7 +271,7 @@ export class SquadronChannels implements Command {
         }
     }
 
-    async getRandomSquadronEmbed(guildId: string, channel: TextChannel, numberToSelect: number, categoryToSelect: string): Promise<MessageEmbed> {
+    private async getRandomSquadronEmbed(guildId: string, channel: TextChannel, numberToSelect: number, categoryToSelect: string): Promise<MessageEmbed> {
         let guild = await this.db.model.guild.findOne({guild_id: guildId});
         if (guild) {
             let categories: CategoryChannel[] = []
@@ -300,9 +284,14 @@ export class SquadronChannels implements Command {
                 if (index >= 0) {
                     categories.push(channel.guild.channels.cache.get(categoryToSelect) as CategoryChannel)
                 } else {
-                    await channel.send(Responses.getResponse(Responses.FAIL));
-                    channel.send(Responses.getResponse(Responses.IDNOTFOUND));
-                    return
+                    const categoryToSelectObject = this.getChannelCategoryFromName(channel, categoryToSelect)
+                    if (categoryToSelectObject) {
+                        categories.push(categoryToSelectObject)
+                    } else {
+                        await channel.send(Responses.getResponse(Responses.FAIL));
+                        channel.send(Responses.getResponse(Responses.IDNOTFOUND));
+                        return
+                    }
                 }
             }
             if (categories.length === 0) {
@@ -326,6 +315,10 @@ export class SquadronChannels implements Command {
             await channel.send(Responses.getResponse(Responses.FAIL));
             channel.send(Responses.getResponse(Responses.GUILDNOTSETUP));
         }
+    }
+
+    private getChannelCategoryFromName(channel: TextChannel, categoryName: string) {
+        return channel.guild.channels.cache.find(channel => channel.name === categoryName) as CategoryChannel
     }
 
     help(): [string, string, string, string[]] {

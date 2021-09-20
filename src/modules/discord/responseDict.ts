@@ -53,6 +53,9 @@ export class Responses {
     public static readonly EMBEDPERMISSION = [
         "I don't have permissions to send a message and/or create an embed and/or attach files in the entered channel. Please assign the permissions to me."
     ];
+    public static readonly CHANNELPERMISSIONS = [
+        "I don't have permissions to manage channels. Please assign the permissions to me."
+    ];
 
     public static getResponse(action: string[]): string {
         return action[Math.floor(Math.random() * action.length)];
