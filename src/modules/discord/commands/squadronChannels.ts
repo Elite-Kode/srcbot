@@ -110,8 +110,16 @@ export class SquadronChannels implements Command {
                                 const categoryObject = this.getChannelCategoryFromName(message.channel as TextChannel, categoryName)
                                 if (platforms.every(platform => guild.squadron_platforms.includes(platform)) && categoryObject && guild.squadron_channel_category_id.findIndex(item => item === categoryObject.id) !== -1) {
                                     let channelName = `${name}-${platforms.sort().join()}`;
+                                    if (message.guild.channels.cache.some(channel => channel.name === channelName)) {
+                                        message.channel.send(Responses.getResponse(Responses.CHANNELEXISTS));
+                                        return
+                                    }
                                     await message.guild.channels.create(channelName, {
-                                        parent: categoryObject
+                                        parent: categoryObject,
+                                        permissionOverwrites: [{
+                                            id: message.author.id,
+                                            allow: [Permissions.FLAGS.MANAGE_CHANNELS, Permissions.FLAGS.MANAGE_MESSAGES]
+                                        }]
                                     })
                                     await this.sortChannelCategory(message.guild.id, message.channel as TextChannel, categoryObject.id)
                                     message.channel.send(Responses.getResponse(Responses.SUCCESS));

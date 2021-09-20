@@ -56,6 +56,9 @@ export class Responses {
     public static readonly CHANNELPERMISSIONS = [
         "I don't have permissions to manage channels. Please assign the permissions to me."
     ];
+    public static readonly CHANNELEXISTS = [
+        "A channel already exists for this squadron name and platform."
+    ];
 
     public static getResponse(action: string[]): string {
         return action[Math.floor(Math.random() * action.length)];
