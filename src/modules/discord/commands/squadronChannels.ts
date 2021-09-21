@@ -109,7 +109,7 @@ export class SquadronChannels implements Command {
                             if (guild.squadron_channel_category_id && guild.squadron_channel_category_id.length !== 0) {
                                 const categoryObject = this.getChannelCategoryFromName(message.channel as TextChannel, categoryName)
                                 if (platforms.every(platform => guild.squadron_platforms.includes(platform)) && categoryObject && guild.squadron_channel_category_id.findIndex(item => item === categoryObject.id) !== -1) {
-                                    let channelName = `${name.join('-')}-${platforms.sort().join('')}`;
+                                    let channelName = `${name.join('-').toLowerCase()}-${platforms.sort().join('').toLowerCase()}`;
                                     if (message.guild.channels.cache.some(channel => channel.name === channelName)) {
                                         message.channel.send(Responses.getResponse(Responses.CHANNELEXISTS));
                                         return
@@ -324,7 +324,7 @@ export class SquadronChannels implements Command {
     }
 
     private getChannelCategoryFromName(channel: TextChannel, categoryName: string) {
-        return channel.guild.channels.cache.find(channel => channel.name === categoryName) as CategoryChannel
+        return channel.guild.channels.cache.find(channel => channel.name.toLowerCase() === categoryName.toLowerCase()) as CategoryChannel
     }
 
     help(): [string, string, string, string[]] {
