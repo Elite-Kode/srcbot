@@ -333,9 +333,11 @@ export class SquadronChannels implements Command {
         return [
             'squadchannels(aliases: sqch)',
             'Performs operations on squadron channels',
-            'squadchannels <get> <number> <all|channel category id>',
+            'squadchannels <get|random|create> <number> <all|channel category id|channel category name>',
             [
                 '`@SRCBot squadchannels get 3 all`',
+                '`@SRCBot squadchannels random 2 general`',
+                '`@SRCBot squadchannels create pcps general my squadron`',
                 '`@SRCBot sqch g 4 1234564789012345678`',
                 '`@SRCBot squadchannels get 3 123456789012345678`'
             ]
