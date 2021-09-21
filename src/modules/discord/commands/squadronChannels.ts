@@ -97,11 +97,11 @@ export class SquadronChannels implements Command {
     async create(message: Message, argsArray: string[]) {
         try {
             await Access.has(message.author, message.guild, [Access.ADMIN, Access.MOD, Access.FORBIDDEN]);
-            if (argsArray.length === 4) {
+            if (argsArray.length >= 4) {
                 let guildId = message.guild.id;
                 let platforms = argsArray[1].match(/.{1,2}/g);
                 let categoryName = argsArray[2];
-                let name = argsArray[3];
+                let name = argsArray.slice(3);
                 try {
                     let guild = await this.db.model.guild.findOne({guild_id: guildId});
                     if (guild) {
@@ -109,7 +109,7 @@ export class SquadronChannels implements Command {
                             if (guild.squadron_channel_category_id && guild.squadron_channel_category_id.length !== 0) {
                                 const categoryObject = this.getChannelCategoryFromName(message.channel as TextChannel, categoryName)
                                 if (platforms.every(platform => guild.squadron_platforms.includes(platform)) && categoryObject && guild.squadron_channel_category_id.findIndex(item => item === categoryObject.id) !== -1) {
-                                    let channelName = `${name}-${platforms.sort().join()}`;
+                                    let channelName = `${name.join('-')}-${platforms.sort().join('')}`;
                                     if (message.guild.channels.cache.some(channel => channel.name === channelName)) {
                                         message.channel.send(Responses.getResponse(Responses.CHANNELEXISTS));
                                         return
@@ -186,8 +186,6 @@ export class SquadronChannels implements Command {
                     message.channel.send(Responses.getResponse(Responses.FAIL));
                     App.bugsnagClient.call(err);
                 }
-            } else if (argsArray.length > 3) {
-                message.channel.send(Responses.getResponse(Responses.TOOMANYPARAMS));
             } else {
                 message.channel.send(Responses.getResponse(Responses.NOPARAMS));
             }
