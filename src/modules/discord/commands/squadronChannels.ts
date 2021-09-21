@@ -119,7 +119,7 @@ export class SquadronChannels implements Command {
                                         permissionOverwrites: [{
                                             id: message.author.id,
                                             allow: [Permissions.FLAGS.MANAGE_CHANNELS, Permissions.FLAGS.MANAGE_MESSAGES]
-                                        }]
+                                        }, ...categoryObject.permissionOverwrites.array()]
                                     })
                                     await this.sortChannelCategory(message.guild.id, message.channel as TextChannel, categoryObject.id)
                                     message.channel.send(Responses.getResponse(Responses.SUCCESS));
