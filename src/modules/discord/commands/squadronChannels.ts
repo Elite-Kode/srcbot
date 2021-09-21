@@ -100,7 +100,7 @@ export class SquadronChannels implements Command {
             if (argsArray.length >= 4) {
                 let guildId = message.guild.id;
                 let platforms = argsArray[1].match(/.{1,2}/g);
-                let categoryName = `${argsArray[2]} squadron`;
+                let categoryName = `${argsArray[2]} squadrons`;
                 let name = argsArray.slice(3);
                 try {
                     let guild = await this.db.model.guild.findOne({guild_id: guildId});
