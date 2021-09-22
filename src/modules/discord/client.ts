@@ -32,6 +32,7 @@ import { HelpSchema } from '../../interfaces/typings';
 import App from '../../server';
 import { DB } from '../../db';
 import { Command } from "../../interfaces/Command";
+import { SquadronLeaderRoles } from "./commands/squadronLeaderRoles";
 
 export class DiscordClient {
     public client: Client;
@@ -118,6 +119,7 @@ export class DiscordClient {
         let myGuild = new MyGuild();
         let adminRoles = new AdminRoles();
         let modRoles = new ModRoles();
+        let squadronLeaderRoles = new SquadronLeaderRoles();
         let forbiddenRoles = new ForbiddenRoles();
         let squadronCategories = new SquadronCategories();
         let squadronChannels = new SquadronChannels();
@@ -130,6 +132,8 @@ export class DiscordClient {
         this.commandsMap.set("arl", adminRoles);
         this.commandsMap.set("modroles", modRoles);
         this.commandsMap.set("mrl", modRoles);
+        this.commandsMap.set("squadronleaderroles", squadronLeaderRoles);
+        this.commandsMap.set("slrl", squadronLeaderRoles);
         this.commandsMap.set("forbiddenroles", forbiddenRoles);
         this.commandsMap.set("frl", forbiddenRoles);
         this.commandsMap.set("squadcategories", squadronCategories);
