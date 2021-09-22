@@ -18,6 +18,7 @@ export interface IGuild {
     guild_id: string,
     admin_roles_id: string[],
     mod_roles_id: string[],
+    squadron_leader_roles_id: string[],
     forbidden_roles_id: string[],
     squadron_channel_category_id: string[],
     squadron_platforms: string[],

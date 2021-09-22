@@ -21,6 +21,7 @@ export class Access {
     public static readonly ALL: string = "all";
     public static readonly ADMIN: string = "admin";
     public static readonly MOD: string = "mod";
+    public static readonly SQUADRON_LEADER: string = "squadron";
     public static readonly FORBIDDEN: string = "forbidden";
 
     public static async has(author: User, guild: Guild, perms: string[], allowAdmin = false): Promise<boolean> {
@@ -52,6 +53,15 @@ export class Access {
                         case "mod": {
                             let modRoles = guild.mod_roles_id;
                             modRoles.forEach((role, index) => {
+                                if (roles.cache.has(role)) {
+                                    bool = true;
+                                }
+                            });
+                        }
+                            break;
+                        case "squadron": {
+                            let squadronLeaderRoles = guild.squadron_leader_roles_id;
+                            squadronLeaderRoles.forEach((role, index) => {
                                 if (roles.cache.has(role)) {
                                     bool = true;
                                 }

@@ -96,7 +96,7 @@ export class SquadronChannels implements Command {
 
     async create(message: Message, argsArray: string[]) {
         try {
-            await Access.has(message.author, message.guild, [Access.ADMIN, Access.MOD, Access.FORBIDDEN]);
+            await Access.has(message.author, message.guild, [Access.ADMIN, Access.MOD, Access.SQUADRON_LEADER, Access.FORBIDDEN]);
             if (argsArray.length >= 4) {
                 let guildId = message.guild.id;
                 let platforms = argsArray[1].match(/.{1,2}/g);
