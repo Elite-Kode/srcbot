@@ -100,7 +100,7 @@ export class SquadronChannels implements Command {
             if (argsArray.length >= 4) {
                 let guildId = message.guild.id;
                 let platforms = argsArray[1].match(/.{1,2}/g);
-                let categoryName = `${argsArray[2]} squadrons`;
+                let categoryName = argsArray[2];
                 let name = argsArray.slice(3);
                 try {
                     let guild = await this.db.model.guild.findOne({guild_id: guildId});
@@ -257,9 +257,11 @@ export class SquadronChannels implements Command {
             for (const category of categories) {
                 let channelsToSort = channel.guild.channels.cache.filter(channel => channel.parentID === category.id).array()
                 channelsToSort.sort((firstChannel, secondChannel) => {
-                    if (firstChannel.name.toLowerCase() > secondChannel.name.toLowerCase()) {
+                    const firstChannelName = firstChannel.name.startsWith('💎') ? firstChannel.name.slice(2).toLowerCase() : firstChannel.name.toLowerCase()
+                    const secondChannelName = secondChannel.name.startsWith('💎') ? secondChannel.name.slice(2).toLowerCase() : secondChannel.name.toLowerCase()
+                    if (firstChannelName > secondChannelName) {
                         return 1
-                    } else if (firstChannel.name.toLowerCase() < secondChannel.name.toLowerCase()) {
+                    } else if (firstChannelName < secondChannelName) {
                         return -1
                     } else {
                         return 0
@@ -324,7 +326,7 @@ export class SquadronChannels implements Command {
     }
 
     private getChannelCategoryFromName(channel: TextChannel, categoryName: string) {
-        return channel.guild.channels.cache.find(channel => channel.name.toLowerCase() === categoryName.toLowerCase()) as CategoryChannel
+        return channel.guild.channels.cache.find(channel => channel.name.toLowerCase() === `${categoryName.toLowerCase()} squadrons`) as CategoryChannel
     }
 
     help(): [string, string, string, string[]] {
