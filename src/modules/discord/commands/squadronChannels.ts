@@ -107,7 +107,13 @@ export class SquadronChannels implements Command {
                     if (guild) {
                         if (guild.squadron_platforms && guild.squadron_platforms.length !== 0) {
                             if (guild.squadron_channel_category_id && guild.squadron_channel_category_id.length !== 0) {
-                                const categoryObject = this.getChannelCategoryFromName(message.channel as TextChannel, categoryName)
+                                let categoryObject = this.getChannelCategoryFromName(message.channel as TextChannel, categoryName)
+                                let count = 2
+                                while (categoryObject.children.size === 50) {
+                                    categoryObject = this.getChannelCategoryFromName(message.channel as TextChannel, categoryName, count)
+                                    count++
+                                }
+
                                 if (platforms.every(platform => guild.squadron_platforms.includes(platform)) && categoryObject && guild.squadron_channel_category_id.findIndex(item => item === categoryObject.id) !== -1) {
                                     let channelName = `${name.join('-').toLowerCase()}-${platforms.sort().join('').toLowerCase()}`;
                                     if (message.guild.channels.cache.some(channel => channel.name === channelName)) {
@@ -325,8 +331,8 @@ export class SquadronChannels implements Command {
         }
     }
 
-    private getChannelCategoryFromName(channel: TextChannel, categoryName: string) {
-        return channel.guild.channels.cache.find(channel => channel.name.toLowerCase() === `${categoryName.toLowerCase()} squadrons`) as CategoryChannel
+    private getChannelCategoryFromName(channel: TextChannel, categoryName: string, iteration?: number) {
+        return channel.guild.channels.cache.find(channel => channel.name.toLowerCase() === `${categoryName.toLowerCase()} squadrons${iteration ? ` ${iteration}` : ``}`) as CategoryChannel
     }
 
     help(): [string, string, string, string[]] {
