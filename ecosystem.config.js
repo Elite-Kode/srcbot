@@ -2,7 +2,7 @@ module.exports = {
   apps: [
     {
       name: 'srcbot',
-      script: './dist/bin/start.js',
+      script: './dist/index.js',
       watch: true,
       log_date_format: 'YYYY-MM-DD HH:mm Z',
       env: {
