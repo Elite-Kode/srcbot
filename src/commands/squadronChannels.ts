@@ -21,7 +21,7 @@ import { SQUADRON_LEADER } from '../accesses/squadronLeader';
 import { ISrcSchema, SrcModel } from '../schemas/src';
 import { getChannelCategoryFromName, getRandomSquadronEmbed, sortChannelCategory } from '../squadronChannels';
 
-export class SqaudronChannels implements Command {
+export class SquadronChannels implements Command {
   respondDm = false;
   sendDm = false;
   respondAsDm: boolean;
@@ -65,8 +65,20 @@ export class SqaudronChannels implements Command {
     }
     const numberToSelect = +argsArray[1];
     const categoryToSelect = argsArray[2];
+    let guild: IGuildSchema | null;
+    try {
+      guild = await GuildModel.findOne({ guild_id: message.guildId });
+    } catch (err) {
+      message.channel.send(Responses.getResponse(Responses.FAIL));
+      LoggingClient.error(err);
+      return;
+    }
+    if (!guild) {
+      message.channel.send(Responses.getResponse(Responses.GUILD_NOT_SETUP));
+      return;
+    }
     const embed = await getRandomSquadronEmbed(
-      message.guildId,
+      guild,
       message.channel as TextChannel,
       numberToSelect,
       categoryToSelect
@@ -154,7 +166,7 @@ export class SqaudronChannels implements Command {
         ...categoryObject.permissionOverwrites.cache.toJSON()
       ]
     });
-    await sortChannelCategory(message.guildId, message.channel as TextChannel, categoryObject.id);
+    await sortChannelCategory(guild, message.channel as TextChannel, categoryObject.id);
     message.channel.send(Responses.getResponse(Responses.SUCCESS));
   }
 
@@ -177,7 +189,19 @@ export class SqaudronChannels implements Command {
       return;
     }
     const categoryToSelect = argsArray[1];
-    await sortChannelCategory(message.guildId, message.channel as TextChannel, categoryToSelect);
+    let guild: IGuildSchema | null;
+    try {
+      guild = await GuildModel.findOne({ guild_id: message.guildId });
+    } catch (err) {
+      message.channel.send(Responses.getResponse(Responses.FAIL));
+      LoggingClient.error(err);
+      return;
+    }
+    if (!guild) {
+      message.channel.send(Responses.getResponse(Responses.GUILD_NOT_SETUP));
+      return;
+    }
+    await sortChannelCategory(guild, message.channel as TextChannel, categoryToSelect);
     message.channel.send(Responses.getResponse(Responses.SUCCESS));
   }
 

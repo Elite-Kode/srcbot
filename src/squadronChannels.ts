@@ -15,16 +15,16 @@
  */
 
 import { CategoryChannel, GuildChannel, MessageEmbed, TextChannel } from 'discord.js';
-import { Responses } from 'kodeblox';
+import { IGuildSchema, Responses } from 'kodeblox';
 import { SrcModel } from './schemas/src';
 import { sampleSize } from 'lodash';
 
 export async function sortChannelCategory(
-  guildId: string,
+  guild: IGuildSchema,
   channel: TextChannel,
   categoryToSelect: string
 ): Promise<void> {
-  const src = await SrcModel.findOne({ guild_id: guildId });
+  const src = await SrcModel.findOne({ guild_id: guild._id });
   if (!src) {
     channel.send(Responses.getResponse(Responses.GUILD_NOT_SETUP));
     return;
@@ -79,53 +79,53 @@ export async function sortChannelCategory(
 }
 
 export async function getRandomSquadronEmbed(
-  guildId: string,
+  guild: IGuildSchema,
   channel: TextChannel,
   numberToSelect: number,
   categoryToSelect: string
 ): Promise<MessageEmbed | void> {
-  const src = await SrcModel.findOne({ guild_id: guildId });
-  if (src) {
-    const categories: CategoryChannel[] = [];
-    if (categoryToSelect === 'all') {
-      src.squadron_channel_category_id.forEach((categoryId) => {
-        categories.push(channel.guild.channels.cache.get(categoryId) as CategoryChannel);
-      });
+  const src = await SrcModel.findOne({ guild_id: guild._id });
+  if (!src) {
+    channel.send(Responses.getResponse(Responses.GUILD_NOT_SETUP));
+    return;
+  }
+  const categories: CategoryChannel[] = [];
+  if (categoryToSelect === 'all') {
+    src.squadron_channel_category_id.forEach((categoryId) => {
+      categories.push(channel.guild.channels.cache.get(categoryId) as CategoryChannel);
+    });
+  } else {
+    const index = src.squadron_channel_category_id.indexOf(categoryToSelect);
+    if (index >= 0) {
+      categories.push(channel.guild.channels.cache.get(categoryToSelect) as CategoryChannel);
     } else {
-      const index = src.squadron_channel_category_id.indexOf(categoryToSelect);
-      if (index >= 0) {
-        categories.push(channel.guild.channels.cache.get(categoryToSelect) as CategoryChannel);
+      const categoryToSelectObject = getChannelCategoryFromName(channel, categoryToSelect);
+      if (categoryToSelectObject) {
+        categories.push(categoryToSelectObject);
       } else {
-        const categoryToSelectObject = getChannelCategoryFromName(channel, categoryToSelect);
-        if (categoryToSelectObject) {
-          categories.push(categoryToSelectObject);
-        } else {
-          channel.send(Responses.getResponse(Responses.ID_NOT_FOUND));
-          return;
-        }
+        channel.send(Responses.getResponse(Responses.ID_NOT_FOUND));
+        return;
       }
     }
-    if (categories.length === 0) {
-      channel.send(Responses.getResponse(Responses.ID_NOT_FOUND));
-      return;
-    }
-    let channelsToSelect = channel.guild.channels.cache
-      .filter((channel) => !!channel.parentId && categories.map((category) => category.id).includes(channel.parentId))
-      .toJSON();
-    channelsToSelect = sampleSize(channelsToSelect, numberToSelect);
-    const embed = new MessageEmbed();
-    embed.setTitle('Selected Squadrons');
-    embed.setColor([255, 0, 255]);
-    embed.setTimestamp(new Date());
-    let idList = '';
-    channelsToSelect.forEach((channel) => {
-      idList += `${channel.id} - #${channel.name}\n`;
-    });
-    embed.addField('Ids and Names', idList);
-    return embed;
-  } else {
-    channel.send(Responses.getResponse(Responses.GUILD_NOT_SETUP));
   }
+  if (categories.length === 0) {
+    channel.send(Responses.getResponse(Responses.ID_NOT_FOUND));
+    return;
+  }
+  let channelsToSelect = channel.guild.channels.cache
+    .filter((channel) => !!channel.parentId && categories.map((category) => category.id).includes(channel.parentId))
+    .toJSON();
+  channelsToSelect = sampleSize(channelsToSelect, numberToSelect);
+  const embed = new MessageEmbed();
+  embed.setTitle('Selected Squadrons');
+  embed.setColor([255, 0, 255]);
+  embed.setTimestamp(new Date());
+  let idList = '';
+  channelsToSelect.forEach((channel) => {
+    idList += `${channel.id} - #${channel.name}\n`;
+  });
+  embed.addField('Ids and Names', idList);
+  return embed;
 }
 
 export function getChannelCategoryFromName(

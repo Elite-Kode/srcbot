@@ -18,11 +18,11 @@ import { NewCommand } from 'kodeblox';
 import { AdminRoles } from './adminRoles';
 import { ForbiddenRoles } from './forbiddenRoles';
 import { ModRoles } from './modRoles';
-import { SqaudronChannels } from './sqaudronChannels';
+import { SquadronChannels } from './squadronChannels';
 import { SquadronCategories } from './squadronCategories';
 import { SquadronLeaderRoles } from './squadronLeaderRoles';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function allCommands(): [command: NewCommand, ...args: any[]][] {
-  return [[AdminRoles], [ForbiddenRoles], [ModRoles], [SqaudronChannels], [SquadronCategories], [SquadronLeaderRoles]];
+  return [[AdminRoles], [ForbiddenRoles], [ModRoles], [SquadronChannels], [SquadronCategories], [SquadronLeaderRoles]];
 }
