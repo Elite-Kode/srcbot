@@ -6,10 +6,10 @@ Thank you for contributing to this project. All contributions are welcome. But f
 
 SRCBot requires a few things to get going:
 
-1. Git and Github account
-2. A recent Node.js LTS version, v12.18.2 (Erbium) and above
+1. Git and GitHub account
+2. A recent Node.js LTS version, v16.6.1 (Gallium) and above
 3. MongoDB 4.0 and above
-5. Configure secrets for the application
+5. Configure environment variables for the application
 6. A Discord account for Discord bot registration
 
 On the server or development workstation, Node.js, and MongoDB must be installed and correctly working. Otherwise, these instructions may fail.
@@ -30,9 +30,9 @@ Download the latest stable version of Node.js for your platform, and let it inst
 
 ```console
     foo@bar:~$ node -v
-    v12.18.2
+    v16.6.1
     foo@bar:~$ npm -v
-    6.14.4
+    7.20.3
 ```
 
 Update npm:
@@ -45,7 +45,7 @@ Update npm:
 
 - Install [MongoDB](https://www.mongodb.com/what-is-mongodb), and use the default port 27017
 - Enabling [access control](https://docs.mongodb.com/manual/tutorial/enable-authentication/) is essential for production environments and optional for development environments.
-- Create a database in the MongoDB instance, `srcbot` containing a single collection called `guilds`
+- Create a database in the MongoDB instance, `srcbot` containing a two collections called `guilds` and `src`
 
 ## Obtain source code and install dependencies
 
@@ -62,75 +62,58 @@ Building SRCBot is relatively straightforward if taken step by step. Being a mor
 Let's first get all the dependencies needed to build and run the underlying servers that run SRCBot installed.
 
 ```console
-    foo@bar:~$ npm i
+    foo@bar:~$ npm ci
 ```
-
-Please address any errors you see, such as installing missing node modules, such as say `lodash` or similar. This may happen when the code demands a module that is not yet in package.json, but is needed:
-
-```console
-    foo@bar:~$ npm install --save <module> 
-```
-
-This will include the package in package.json as well as install it locally. This should then allow a clean `npm i' with no errors. Please [report missing packages as an issue](https://github.com/Elite-Kode/srcbot/issues).
 
 ## Configure source code
 
-### Create a secrets file
+### Create a `.env` file
 
-The secrets file is used by SRCBot to store configurable properties.
+The `.env` file is used by SRCBot to store configurable properties.
 
-Create a new `secrets.ts` file in the `src` folder:
+Create a new `.env` file in the project folder
 
 #### src/secrets.ts
 
 ```ts
-  "use strict";
-  
-  // Authenticated MongoDB (not default, strongly recommended in prod). Comment out if not using authentication
-  class DiscordSecrets {
-    public static readonly token: string = "[Discord token for bot]";
-  }
+SRCBOT_PORT=3001
 
-  class DBSecrets {
-    public static readonly userName: string = "[username for srcbot db]";
-    public static readonly password: string = "[password for srcbot db]";
-    public static readonly url: string = "mongodb://localhost:27017/srcbot";
-  }
+SRCBOT_DISCORD_TOKEN=[Discord token for bot]
 
-  class BugsnagSecrets {
-    public static readonly token: string = "[Bugsnag token for the Express app]";
-    public static readonly use: boolean = [true/false];
-  }
+SRCBOT_DB_USER=[username for srcbot db]
+SRCBOT_DB_PASSWORD=[password for srcbot db]
+SRCBOT_DB_HOST=mongodb://localhost:27017/srcbot
 
-  export { DiscordSecrets, DBSecrets, BugsnagSecrets };
+SRCBOT_BUGSNAG_TOKEN=[Bugsnag token for the Express app]
+SRCBOT_BUGSNAG_ENABLED=[true/false]
 ```
 
-- `DBSecrets.userName` if you have set up MongoDB access control (mandatory in production environments), the username for the srcbot collection, or blank in development
-- `DBSecrets.password` if you have set up MongoDB access control (mandatory in production environments), the password for the srcbot collection, or blank in development
-- `DBSecrets.url` SRCBot assumes a local MongoDB installation on port 27017. Change this if you have a cloud or different MongoDB configuration
-- `DiscordSecrets.token` is your Discord bot token. [Read here for info](https://discord.com/developers/docs/topics/oauth2)
-- `BugsnagSecrets.use` enables BugSnag if set to true, set to false otherwise
-- `BugsnagSecrets.token` is your BugSnag API key for thhe Express app. Please don't set it if `BugsnagSecrets.use` is `false`
+- `SRCBOT_PORT` the port on which the bot will run
+- `SRCBOT_DISCORD_TOKEN` is your Discord bot token. [Read here for info](https://discord.com/developers/docs/topics/oauth2)
+- `SRCBOT_DB_USER` if you have set up MongoDB access control (mandatory in production environments), the username for the srcbot collection, or blank in development
+- `SRCBOT_DB_PASSWORD` if you have set up MongoDB access control (mandatory in production environments), the password for the srcbot collection, or blank in development
+- `SRCBOT_DB_HOST` SRCBot assumes a local MongoDB installation on port 27017. Change this if you have a cloud or different MongoDB configuration
+- `SRCBOT_BUGSNAG_TOKEN` is your BugSnag API key for thhe Express app. Please don't set it if `SRCBOT_BUGSNAG_ENABLED` is `false`
+- `SRCBOT_BUGSNAG_ENABLED` enables BugSnag if set to true, set to false otherwise
 
 NB: Although MongoDB access control is strongly recommended, MongoDB has significant password composition limitations. We suggest a long random alphanumeric password rather than a highly complex password because many punctuation characters, including `;` are not valid MongoDB passwords.
 
-> **Security notice:** Do not add or commit your secrets to Git.
+> **Security notice:** Do not add or commit your `.env` file to Git.
 
-### Build SRCBot frontend
+### Build SRCBot
  
 SRCBot is a TypeScript application, and it needs to be transpiled into a Node.js-friendly code. To do this, we first install TypeScript command line tools, which the build process uses, and then build the code:
 
 ```console
     foo@bar:~$ cd srcbot
-    foo@bar:~$ npm install -g typescript
     foo@bar:~$ tsc -v
-    Version 4.1.5
+    Version 4.5.4
 ```
 
-If `tsc` works, we can go ahead and build srcbot:
+If `tsc` works, we can go ahead and build SRCBot:
 
 ```console
-    foo@bar:~$ gulp
+    foo@bar:~$ npm run build
 ```
 
 Please take care of any errors you see. Sometimes, two attempts are required to get a successful build. You may need to add more node modules locally to get it to build. In development, you will likely see warnings about the production environment not being used, and that's correct. Developers can generally ignore other alerts as long as the build succeeds. Feel free to submit a pull request to fix or address these warnings.
@@ -143,10 +126,10 @@ If you want to use BugSnag, create a BugSnag account, then an application, and o
 
 Create an Express application for SRCBot and
 
-- set `BugsnagSecrets.use` to `true`
-- set ``BugsnagSecrets.token` to your BugSnag application API key
+- set `SRCBOT_BUGSNAG_ENABLED` to `true`
+- set `SRCBOT_BUGSNAG_TOKEN` to your BugSnag application API key
 
-> **Security notice:** Do not add or commit your secrets to Git.
+> **Security notice:** Do not add or commit your `.env` file to Git.
 
 ## Running and debugging SRCBot
 
@@ -156,7 +139,7 @@ SRCBot runs on the following default ports
 
 | Prod | Dev | Debug |
 | -- | -- | -- |
-| 4002 | 3002 | 9229 |
+| 4001 | 3001 | 9229 |
 
 ### Development Mode
 
@@ -164,7 +147,7 @@ If you've read this far, you're likely to be developing SRCBot or want to run yo
 
 ```console
     foo@bar:~$ cd srcbot
-    foo@bar:~$ npm run startdev
+    foo@bar:~$ npm start
 ```
 
 You can also use your IDE to navigate to `package.json` and configure, run, or debug a script target, which gives you great control over the development process.
@@ -175,7 +158,7 @@ To execute the project in production mode:
 
 ```console
     foo@bar:~$ cd srcbot
-    foo@bar:~$ npm run start
+    foo@bar:~$ pm2 start --env production
 ```
 
 Review the HTTP ports above or set up a port forwarding or caching configuration to scale and serve many clients.

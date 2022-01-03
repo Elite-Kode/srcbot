@@ -63,7 +63,7 @@ const appServer = new AppServer({
   }
 });
 appServer.server.on('listening', () => {
-  console.log('weeheee');
+  console.log('Starting SRCBot...');
 });
 
 appServer.discordClient.registerCommands(allCommands());
