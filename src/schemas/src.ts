@@ -47,4 +47,4 @@ export const SrcSchema = new Schema<ISrcSchema>(
   }
 );
 
-export const SrcModel = model('SRC', SrcSchema, 'bgs');
+export const SrcModel = model('SRC', SrcSchema, 'src');

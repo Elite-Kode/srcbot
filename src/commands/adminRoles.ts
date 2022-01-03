@@ -172,7 +172,7 @@ export class AdminRoles implements Command {
     for (const id of guild.admin_roles_id) {
       idList += message.guild.roles.cache.has(id)
         ? `${id} - @${message.guild.roles.cache.get(id)?.name}\n`
-        : `${id} - Does not exist in Discord. Please delete this from BGSBot`;
+        : `${id} - Does not exist in Discord. Please delete this from SRCBot`;
     }
     embed.addField('Ids and Names', idList);
     embed.setTimestamp(new Date());
@@ -182,15 +182,15 @@ export class AdminRoles implements Command {
   help(): [string, string, string, string[]] {
     return [
       'adminroles(aliases: arl)',
-      'Adds, removes or lists the roles that should have administering capability over BGSBot',
+      'Adds, removes or lists the roles that should have administering capability over SRCBot',
       'adminroles <add|remove|list> <role id>\nadminroles <a|r|l> <role id>',
       [
-        '`@BGSBot adminroles add 1234564789012345678`',
-        '`@BGSBot arl a 1234564789012345678`',
-        '`@BGSBot adminroles remove 123456789012345678`',
-        '`@BGSBot arl remove 123456789012345678`',
-        '`@BGSBot adminroles list`',
-        '`@BGSBot adminroles l`'
+        '`@SRCBot adminroles add 1234564789012345678`',
+        '`@SRCBot arl a 1234564789012345678`',
+        '`@SRCBot adminroles remove 123456789012345678`',
+        '`@SRCBot arl remove 123456789012345678`',
+        '`@SRCBot adminroles list`',
+        '`@SRCBot adminroles l`'
       ]
     ];
   }

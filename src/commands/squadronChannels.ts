@@ -77,12 +77,7 @@ export class SquadronChannels implements Command {
       message.channel.send(Responses.getResponse(Responses.GUILD_NOT_SETUP));
       return;
     }
-    const embed = await getRandomSquadronEmbed(
-      guild,
-      message.channel as TextChannel,
-      numberToSelect,
-      categoryToSelect
-    );
+    const embed = await getRandomSquadronEmbed(guild, message.channel as TextChannel, numberToSelect, categoryToSelect);
     if (embed) {
       message.channel.send({ embeds: [embed] });
     }

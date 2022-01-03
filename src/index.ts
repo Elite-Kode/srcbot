@@ -27,10 +27,10 @@ config();
 LoggingClient.registerLogger(
   new Bugsnag({
     // @ts-ignore
-    apiKey: process.env.BGSBOT_BUGSNAG_TOKEN ?? '',
+    apiKey: process.env.SRCBOT_BUGSNAG_TOKEN ?? '',
     appVersion: '0.0.1',
     // @ts-ignore
-    disabled: process.env.BGSBOT_BUGSNAG_ENABLED !== 'true'
+    disabled: process.env.SRCBOT_BUGSNAG_ENABLED !== 'true'
   }),
   true
 );
@@ -40,10 +40,10 @@ Access.registerAccessChecker(new SquadronLeader());
 
 const appServer = new AppServer({
   // @ts-ignore
-  port: process.env.BGSBOT_PORT,
+  port: process.env.SRCBOT_PORT,
   discord: {
     // @ts-ignore
-    token: process.env.BGSBOT_DISCORD_TOKEN ?? '',
+    token: process.env.SRCBOT_DISCORD_TOKEN ?? '',
     client: {
       intents: [
         Intents.FLAGS.GUILDS,
@@ -55,11 +55,11 @@ const appServer = new AppServer({
   },
   db: {
     // @ts-ignore
-    username: process.env.BGSBOT_DB_USER,
+    username: process.env.SRCBOT_DB_USER,
     // @ts-ignore
-    password: process.env.BGSBOT_DB_PASSWORD,
+    password: process.env.SRCBOT_DB_PASSWORD,
     // @ts-ignore
-    host: process.env.BGSBOT_DB_HOST
+    host: process.env.SRCBOT_DB_HOST
   }
 });
 appServer.server.on('listening', () => {

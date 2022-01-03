@@ -172,7 +172,7 @@ export class ForbiddenRoles implements Command {
     for (const id of guild.forbidden_roles_id) {
       idList += message.guild.roles.cache.has(id)
         ? `${id} - @${message.guild.roles.cache.get(id)?.name}\n`
-        : `${id} - Does not exist in Discord. Please delete this from BGSBot`;
+        : `${id} - Does not exist in Discord. Please delete this from SRCBot`;
     }
     embed.addField('Ids and Names', idList);
     embed.setTimestamp(new Date());
@@ -182,15 +182,15 @@ export class ForbiddenRoles implements Command {
   help(): [string, string, string, string[]] {
     return [
       'forbiddenroles(aliases: frl)',
-      'Adds, removes or lists the roles that should be forbidden from accessing BGSBot',
+      'Adds, removes or lists the roles that should be forbidden from accessing SRCBot',
       'forbiddenroles <add|remove|list> <role id>\nforbiddenroles <a|r|l> <role id>',
       [
-        '`@BGSBot forbiddenroles add 1234564789012345678`',
-        '`@BGSBot frl a 1234564789012345678`',
-        '`@BGSBot forbiddenroles remove 123456789012345678`',
-        '`@BGSBot forbiddenroles r 123456789012345678`',
-        '`@BGSBot forbiddenroles list`',
-        '`@BGSBot frl list`'
+        '`@SRCBot forbiddenroles add 1234564789012345678`',
+        '`@SRCBot frl a 1234564789012345678`',
+        '`@SRCBot forbiddenroles remove 123456789012345678`',
+        '`@SRCBot forbiddenroles r 123456789012345678`',
+        '`@SRCBot forbiddenroles list`',
+        '`@SRCBot frl list`'
       ]
     ];
   }
