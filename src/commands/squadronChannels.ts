@@ -93,10 +93,6 @@ export class SquadronChannels implements Command {
       message.channel.send(Responses.getResponse(Responses.INSUFFICIENT_PERMS));
       return;
     }
-    if (argsArray.length > 4) {
-      message.channel.send(Responses.getResponse(Responses.TOO_MANY_PARAMS));
-      return;
-    }
     if (argsArray.length < 4) {
       message.channel.send(Responses.getResponse(Responses.NO_PARAMS));
       return;

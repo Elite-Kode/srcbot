@@ -23,7 +23,13 @@ export const SQUADRON_LEADER = 'squadron';
 export class SquadronLeader implements IAccess {
   public priority = 3;
 
-  public async has(author: User, guild: Guild, perms: string[], allowAdmin = false): Promise<boolean> {
+  public async has(
+    author: User,
+    guild: Guild,
+    perms: string[],
+    current: boolean,
+    allowAdmin = false
+  ): Promise<boolean> {
     const member = await guild.members.fetch(author);
     if (allowAdmin && member.permissions.has(Permissions.FLAGS.ADMINISTRATOR)) {
       return true;
@@ -32,7 +38,7 @@ export class SquadronLeader implements IAccess {
       const roles = member.roles.cache;
       const dbGuild = await GuildModel.findOne({ guild_id: guildId });
       if (dbGuild) {
-        const dbSrc = await SrcModel.findById(dbGuild._id);
+        const dbSrc = await SrcModel.findOne({ guild_id: dbGuild._id });
         if (dbSrc) {
           for (const perm of perms) {
             if (perm === SQUADRON_LEADER) {
@@ -47,6 +53,6 @@ export class SquadronLeader implements IAccess {
         }
       }
     }
-    return false;
+    return current;
   }
 }
