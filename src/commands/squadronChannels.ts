@@ -15,11 +15,12 @@
  */
 
 import { Access, ADMIN, Command, FORBIDDEN, GuildModel, IGuildSchema, LoggingClient, Responses } from 'kodeblox';
-import { Message, Permissions, TextChannel } from 'discord.js';
+import { GuildChannel, Message, Permissions, TextChannel } from 'discord.js';
 import { MOD } from '../accesses/mod';
 import { SQUADRON_LEADER } from '../accesses/squadronLeader';
 import { ISrcSchema, SrcModel } from '../schemas/src';
 import {
+  getArchiveCategory,
   getChannelCategoryFromName,
   getRandomSquadronEmbed,
   removeTick,
@@ -38,7 +39,9 @@ export class SquadronChannels implements Command {
     create: this.create.bind(this),
     sort: this.sort.bind(this),
     removeticks: this.removeTicks.bind(this),
-    rt: this.removeTicks.bind(this)
+    rt: this.removeTicks.bind(this),
+    archive: this.archive.bind(this),
+    ar: this.archive.bind(this)
   };
 
   constructor() {
@@ -231,6 +234,83 @@ export class SquadronChannels implements Command {
       return;
     }
     await removeTick(guild, message.channel as TextChannel);
+    message.channel.send(Responses.getResponse(Responses.SUCCESS));
+  }
+
+  async archive(message: Message, argsArray: string[]): Promise<void> {
+    if (!message.member || !message.guild || !message.guildId) {
+      message.channel.send(Responses.getResponse(Responses.NOT_A_GUILD));
+      return;
+    }
+    const permission = await Access.has(message.author, message.guild, [ADMIN, MOD, FORBIDDEN]);
+    if (!permission) {
+      message.channel.send(Responses.getResponse(Responses.INSUFFICIENT_PERMS));
+      return;
+    }
+    if (argsArray.length < 2) {
+      message.channel.send(Responses.getResponse(Responses.NO_PARAMS));
+      return;
+    }
+    if (argsArray.length > 2) {
+      message.channel.send(Responses.getResponse(Responses.TOO_MANY_PARAMS));
+      return;
+    }
+    const name = argsArray[1];
+    let guild: IGuildSchema | null;
+    try {
+      guild = await GuildModel.findOne({ guild_id: message.guildId });
+    } catch (err) {
+      message.channel.send(Responses.getResponse(Responses.FAIL));
+      LoggingClient.error(err);
+      return;
+    }
+    if (!guild) {
+      message.channel.send(Responses.getResponse(Responses.GUILD_NOT_SETUP));
+      return;
+    }
+    let src: ISrcSchema | null;
+    try {
+      src = await SrcModel.findOne({ guild_id: guild._id });
+    } catch (err) {
+      message.channel.send(Responses.getResponse(Responses.FAIL));
+      LoggingClient.error(err);
+      return;
+    }
+    let categoryObject = getArchiveCategory(message.channel as TextChannel);
+    let count = 2;
+    while (categoryObject.children.size === 50) {
+      categoryObject = getArchiveCategory(message.channel as TextChannel, count);
+      count++;
+    }
+    const channelObject = message.guild.channels.cache.find(
+      (channel) =>
+        (channel.name.startsWith('💎') ? channel.name.slice(2).toLowerCase() : channel.name.toLowerCase()) ===
+        name.toLowerCase()
+    ) as GuildChannel;
+    if (
+      !src ||
+      !channelObject ||
+      src.squadron_channel_category_id.findIndex((item) => item === channelObject.parentId) === -1
+    ) {
+      message.channel.send('Channel does not exist or is not a squadron channel');
+      return;
+    }
+    await channelObject.setParent(categoryObject, { lockPermissions: false });
+    const permissionOverwrites = new Map(channelObject.permissionOverwrites.cache.entries());
+    for (const overwrite of permissionOverwrites) {
+      if (overwrite[1].type === 'member' && overwrite[1].allow.has(Permissions.FLAGS.MANAGE_CHANNELS)) {
+        let member = message.guild.members.cache.get(overwrite[1].id);
+        if (!member) {
+          // If not found, retry after fetching
+          await message.guild.members.fetch();
+          member = message.guild.members.cache.get(overwrite[1].id);
+        }
+        if (member && member.roles.cache.hasAny(...src.squadron_leader_roles_id)) {
+          const dmChannel = await member.createDM();
+          dmChannel.send('Lmao, you suck');
+        }
+      }
+    }
     message.channel.send(Responses.getResponse(Responses.SUCCESS));
   }
 

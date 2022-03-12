@@ -141,6 +141,12 @@ export function getChannelCategoryFromName(
   ) as CategoryChannel;
 }
 
+export function getArchiveCategory(channel: TextChannel, iteration?: number): CategoryChannel {
+  return channel.guild.channels.cache.find(
+    (channel) => channel.name.toLowerCase() === `archive event${iteration ? ` ${iteration}` : ``}`
+  ) as CategoryChannel;
+}
+
 export async function removeTick(guild: IGuildSchema, channel: TextChannel): Promise<void> {
   const src = await SrcModel.findOne({ guild_id: guild._id });
   if (!src) {
