@@ -162,6 +162,7 @@ export class SquadronChannels implements Command {
   }
 
   async sort(message: Message, argsArray: string[]): Promise<void> {
+    message.channel.send('Sorting...');
     if (!message.member || !message.guild || !message.guildId) {
       message.channel.send(Responses.getResponse(Responses.NOT_A_GUILD));
       return;
