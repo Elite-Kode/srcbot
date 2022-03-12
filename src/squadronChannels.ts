@@ -56,12 +56,14 @@ export async function sortChannelCategory(
       .filter((channel) => channel.parentId === category.id)
       .map((channel) => channel as GuildChannel);
     channelsToSort.sort((firstChannel, secondChannel) => {
-      const firstChannelName = firstChannel.name.startsWith('💎')
-        ? firstChannel.name.slice(2).toLowerCase()
-        : firstChannel.name.toLowerCase();
-      const secondChannelName = secondChannel.name.startsWith('💎')
-        ? secondChannel.name.slice(2).toLowerCase()
-        : secondChannel.name.toLowerCase();
+      let firstChannelName = firstChannel.name.startsWith('✅') ? firstChannel.name.slice(1) : firstChannel.name;
+      let secondChannelName = secondChannel.name.startsWith('✅') ? secondChannel.name.slice(1) : secondChannel.name;
+      firstChannelName = firstChannelName.startsWith('💎')
+        ? firstChannelName.slice(2).toLowerCase()
+        : firstChannelName.toLowerCase();
+      secondChannelName = secondChannelName.startsWith('💎')
+        ? secondChannelName.slice(2).toLowerCase()
+        : secondChannelName.toLowerCase();
       if (firstChannelName > secondChannelName) {
         return 1;
       }
@@ -137,4 +139,26 @@ export function getChannelCategoryFromName(
     (channel) =>
       channel.name.toLowerCase() === `${categoryName.toLowerCase()} squadrons${iteration ? ` ${iteration}` : ``}`
   ) as CategoryChannel;
+}
+
+export async function removeTick(guild: IGuildSchema, channel: TextChannel): Promise<void> {
+  const src = await SrcModel.findOne({ guild_id: guild._id });
+  if (!src) {
+    channel.send(Responses.getResponse(Responses.GUILD_NOT_SETUP));
+    return;
+  }
+  const categories: CategoryChannel[] = [];
+  src.squadron_channel_category_id.forEach((categoryId) => {
+    categories.push(channel.guild.channels.cache.get(categoryId) as CategoryChannel);
+  });
+  for (const category of categories) {
+    const channelsToRemoveTick = channel.guild.channels.cache
+      .filter((channel) => channel.parentId === category.id)
+      .map((channel) => channel as GuildChannel)
+      .filter((channel) => channel.name.startsWith('✅'));
+
+    for (const channel of channelsToRemoveTick) {
+      channel.setName(channel.name.slice(1));
+    }
+  }
 }

@@ -19,7 +19,12 @@ import { Message, Permissions, TextChannel } from 'discord.js';
 import { MOD } from '../accesses/mod';
 import { SQUADRON_LEADER } from '../accesses/squadronLeader';
 import { ISrcSchema, SrcModel } from '../schemas/src';
-import { getChannelCategoryFromName, getRandomSquadronEmbed, sortChannelCategory } from '../squadronChannels';
+import {
+  getChannelCategoryFromName,
+  getRandomSquadronEmbed,
+  removeTick,
+  sortChannelCategory
+} from '../squadronChannels';
 
 export class SquadronChannels implements Command {
   respondDm = false;
@@ -31,7 +36,9 @@ export class SquadronChannels implements Command {
     random: this.random.bind(this),
     rnd: this.random.bind(this),
     create: this.create.bind(this),
-    sort: this.sort.bind(this)
+    sort: this.sort.bind(this),
+    removeticks: this.removeTicks.bind(this),
+    rt: this.removeTicks.bind(this)
   };
 
   constructor() {
@@ -194,6 +201,36 @@ export class SquadronChannels implements Command {
       return;
     }
     await sortChannelCategory(guild, message.channel as TextChannel, categoryToSelect);
+    message.channel.send(Responses.getResponse(Responses.SUCCESS));
+  }
+
+  async removeTicks(message: Message, argsArray: string[]): Promise<void> {
+    if (!message.member || !message.guild || !message.guildId) {
+      message.channel.send(Responses.getResponse(Responses.NOT_A_GUILD));
+      return;
+    }
+    const permission = await Access.has(message.author, message.guild, [ADMIN, MOD, FORBIDDEN]);
+    if (!permission) {
+      message.channel.send(Responses.getResponse(Responses.INSUFFICIENT_PERMS));
+      return;
+    }
+    if (argsArray.length > 1) {
+      message.channel.send(Responses.getResponse(Responses.TOO_MANY_PARAMS));
+      return;
+    }
+    let guild: IGuildSchema | null;
+    try {
+      guild = await GuildModel.findOne({ guild_id: message.guildId });
+    } catch (err) {
+      message.channel.send(Responses.getResponse(Responses.FAIL));
+      LoggingClient.error(err);
+      return;
+    }
+    if (!guild) {
+      message.channel.send(Responses.getResponse(Responses.GUILD_NOT_SETUP));
+      return;
+    }
+    await removeTick(guild, message.channel as TextChannel);
     message.channel.send(Responses.getResponse(Responses.SUCCESS));
   }
 
