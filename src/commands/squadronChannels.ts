@@ -307,7 +307,16 @@ export class SquadronChannels implements Command {
         }
         if (member && member.roles.cache.hasAny(...src.squadron_leader_roles_id)) {
           const dmChannel = await member.createDM();
-          dmChannel.send('Lmao, you suck');
+          dmChannel.send(
+            'Hello Squadron Leader(s),\n' +
+              '\n' +
+              'You are receiving this message because this channel has been marked as inactive and archived by the moderation staff.\n' +
+              'Should your channel remain archived till the next archival event, it will be deleted. Please note a channel can always be re-created if deleted.\n' +
+              'Any time before then, the channel can be returned to active status by a mod in #❔support-help🙏  via @Staff Ping.\n' +
+              '\n' +
+              'o7 Commander,\n' +
+              'SRC Staff'
+          );
         }
       }
     }
